@@ -6,7 +6,6 @@ import io.github.hsyyid.spongychest.SpongyChest;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataHolder;
-import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.manipulator.mutable.common.AbstractListData;
 import org.spongepowered.api.data.merge.MergeFunction;
 import org.spongepowered.api.data.value.mutable.ListValue;
@@ -44,12 +43,24 @@ public class SpongePriceChestData extends AbstractListData<Double, PriceChestDat
 	@Override
 	public Optional<PriceChestData> from(DataContainer container)
 	{
-		List<Double> value = (List<Double>) container.get(DataQuery.of("PriceChest")).orElse(null);
+		List<Double> value = (List<Double>) container.get(SpongyChest.PRICES_CHEST.getQuery()).orElse(null);
 
 		if (value != null)
 			return Optional.of(new SpongePriceChestData(value));
 		else
+		{
+			if (container.contains(SpongyChest.SELL_PRICE_CHEST.getQuery()))
+			{
+				value = new ArrayList<>(2);
+				value.add(SpongyChest.SELL_PRICE_INDEX, (Double)container.get(SpongyChest.SELL_PRICE_CHEST.getQuery()).get());
+				value.add(SpongyChest.BUY_PRICE_INDEX, 0D);
+				PriceChestData data = new SpongePriceChestData(value);
+				container.remove(SpongyChest.SELL_PRICE_CHEST.getQuery());
+				container.set(SpongyChest.PRICES_CHEST.getQuery(), data);
+				return Optional.of(data);
+			}
 			return Optional.empty();
+		}
 	}
 
 	@Override

@@ -68,8 +68,8 @@ public class SpongyChest
 	public static final Key<Value<UUID>> UUID_CHEST = KeyFactory.makeSingleKey(UUID.class, Value.class, DataQuery.of("UUIDChest"));
 	public static final Key<Value<ItemStackSnapshot>> ITEM_CHEST = KeyFactory.makeSingleKey(ItemStackSnapshot.class, Value.class, DataQuery.of("ItemChest"));
 	public static final Key<ListValue<Double>> PRICES_CHEST = KeyFactory.makeListKey(Double.class, DataQuery.of("PricesChest"));
-	public static final Key<Value<Double>> SELL_PRICE_CHEST = KeyFactory.makeSingleKey(Double.class, Value.class, DataQuery.of("SellPriceChest"));
-	public static final Key<Value<Double>> BUY_PRICE_CHEST = KeyFactory.makeSingleKey(Double.class, Value.class, DataQuery.of("SellPriceChest"));
+	public static final Key<Value<Double>> SELL_PRICE_CHEST = KeyFactory.makeSingleKey(Double.class, Value.class, DataQuery.of("PriceChest"));
+	public static final Key<Value<Double>> BUY_PRICE_CHEST = KeyFactory.makeSingleKey(Double.class, Value.class, DataQuery.of("BuyPriceChest"));
 
 	@Inject
 	private Logger logger;
