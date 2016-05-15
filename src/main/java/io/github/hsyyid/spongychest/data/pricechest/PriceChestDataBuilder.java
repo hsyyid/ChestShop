@@ -5,6 +5,7 @@ import org.spongepowered.api.data.DataHolder;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.manipulator.DataManipulatorBuilder;
 
+import java.util.List;
 import java.util.Optional;
 
 public class PriceChestDataBuilder implements DataManipulatorBuilder<PriceChestData, ImmutablePriceChestData>
@@ -24,12 +25,12 @@ public class PriceChestDataBuilder implements DataManipulatorBuilder<PriceChestD
 	@Override
 	public Optional<PriceChestData> build(DataView container)
 	{
-		if (!container.contains(SpongyChest.PRICE_CHEST.getQuery()))
+		if (!container.contains(SpongyChest.PRICES_CHEST.getQuery()))
 		{
 			return Optional.empty();
 		}
 
-		PriceChestData data = new SpongePriceChestData((Double) container.get(SpongyChest.PRICE_CHEST.getQuery()).get());
+		PriceChestData data = new SpongePriceChestData((List<Double>) container.get(SpongyChest.PRICES_CHEST.getQuery()).get());
 		return Optional.of(data);
 	}
 }

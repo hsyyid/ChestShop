@@ -9,13 +9,15 @@ public class ChestShopModifier
 {
 	private UUID uuid;
 	private ItemStackSnapshot item;
-	private BigDecimal price;
+	private BigDecimal sellPrice;
+    private BigDecimal buyPrice;
 
-	public ChestShopModifier(UUID uuid, ItemStackSnapshot item, BigDecimal price)
+	public ChestShopModifier(UUID uuid, ItemStackSnapshot item, BigDecimal sellPrice, BigDecimal buyPrice)
 	{
 		this.uuid = uuid;
 		this.item = item;
-		this.price = price;
+		this.sellPrice = sellPrice;
+        this.buyPrice = buyPrice;
 	}
 
 	public UUID getUuid()
@@ -28,8 +30,13 @@ public class ChestShopModifier
 		return item;
 	}
 	
-	public BigDecimal getPrice()
+	public BigDecimal getSellPrice()
 	{
-		return price;
+		return sellPrice;
 	}
+    
+    public BigDecimal getBuyPrice()
+    {
+        return buyPrice;
+    }
 }

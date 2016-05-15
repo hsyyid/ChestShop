@@ -1,31 +1,32 @@
 package io.github.hsyyid.spongychest.utils;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntityChest;
-import net.minecraftforge.items.CapabilityItemHandler;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
-public class ChestUtils
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.items.CapabilityItemHandler;
+
+public class PlayerUtils
 {
-	public static boolean fitsItem(TileEntityChest chest, ItemStackSnapshot snapshot)
+	public static boolean fitsItem(EntityPlayer player, ItemStackSnapshot snapshot)
 	{
 		int foundFreeItems = 0;
 		Item item = Item.getByNameOrId(snapshot.getType().getId());
 		
 		if (item != null)
 		{
-			for (int i = 0; i < chest.getSizeInventory(); i++)
+			for (int i = 0; i < player.inventory.getSizeInventory() - 4; i++)
 			{
-				ItemStack stack = chest.getStackInSlot(i);
+				ItemStack stack = player.inventory.getStackInSlot(i);
 				
 				if (stack == null)
 				{
-					foundFreeItems += chest.getInventoryStackLimit();
+					foundFreeItems += player.inventory.getInventoryStackLimit();
 				}
 				else if (stack.getItem().equals(item)) // TODO: Metadata && stack.getMetadata() == snapshot.)
 				{
-					foundFreeItems += chest.getInventoryStackLimit() - stack.stackSize;
+					foundFreeItems += player.inventory.getInventoryStackLimit() - stack.stackSize;
 				}
 
 				if (foundFreeItems >= snapshot.getCount())
@@ -38,16 +39,16 @@ public class ChestUtils
 		return false;
 	}
 
-	public static boolean containsItem(TileEntityChest chest, ItemStackSnapshot snapshot)
+	public static boolean containsItem(EntityPlayer player, ItemStackSnapshot snapshot)
 	{
 		int foundItems = 0;
 		Item item = Item.getByNameOrId(snapshot.getType().getId());
 
 		if (item != null)
 		{
-			for (int i = 0; i < chest.getSizeInventory(); i++)
+			for (int i = 0; i < player.inventory.getSizeInventory() - 4; i++)
 			{
-				ItemStack stack = chest.getStackInSlot(i);
+				ItemStack stack = player.inventory.getStackInSlot(i);
 
 				if (stack != null && stack.getItem().equals(item)) // TODO: Metadata && stack.getMetadata() == snapshot.)
 				{
@@ -64,7 +65,7 @@ public class ChestUtils
 		return false;
 	}
 
-	public static void removeItems(TileEntityChest chest, ItemStackSnapshot snapshot)
+	public static void removeItems(EntityPlayer player, ItemStackSnapshot snapshot)
 	{
 		int neededItems = snapshot.getCount();
 		int foundItems = 0;
@@ -72,15 +73,15 @@ public class ChestUtils
 
 		if (item != null)
 		{
-			for (int i = 0; i < chest.getSizeInventory(); i++)
+			for (int i = 0; i < player.inventory.getSizeInventory() - 4; i++)
 			{
-				ItemStack stack = chest.getStackInSlot(i);
+				ItemStack stack = player.inventory.getStackInSlot(i);
 
 				if (stack != null && stack.getItem().equals(item)) // TODO: Metadata && stack.getMetadata() == snapshot.)
 				{
 					if (neededItems >= foundItems + stack.stackSize)
 					{
-						chest.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).extractItem(i, stack.stackSize, false);
+						player.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null).extractItem(i, stack.stackSize, false);
 						foundItems += stack.stackSize;
 					}
 					else
@@ -93,6 +94,7 @@ public class ChestUtils
 
 				if (foundItems == neededItems)
 				{
+					player.inventory.markDirty();
 					return;
 				}
 			}
