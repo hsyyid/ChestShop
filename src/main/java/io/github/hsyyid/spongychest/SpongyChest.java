@@ -26,6 +26,7 @@ import io.github.hsyyid.spongychest.data.uuidchest.UUIDChestData;
 import io.github.hsyyid.spongychest.data.uuidchest.UUIDChestDataBuilder;
 import io.github.hsyyid.spongychest.listeners.HitBlockListener;
 import io.github.hsyyid.spongychest.listeners.InteractBlockListener;
+import io.github.hsyyid.spongychest.listeners.ItemFrameListener;
 import io.github.hsyyid.spongychest.utils.ChestShopModifier;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -127,6 +128,7 @@ public class SpongyChest
 
 		Sponge.getEventManager().registerListeners(this, new InteractBlockListener());
 		Sponge.getEventManager().registerListeners(this, new HitBlockListener());
+		Sponge.getEventManager().registerListeners(this, new ItemFrameListener());
 
 		// Chest
 		Sponge.getDataManager().register(IsSpongyChestData.class, ImmutableIsSpongyChestData.class, new IsSpongyChestDataBuilder());
