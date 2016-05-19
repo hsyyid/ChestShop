@@ -26,6 +26,7 @@ import io.github.hsyyid.spongychest.data.uuidchest.UUIDChestData;
 import io.github.hsyyid.spongychest.data.uuidchest.UUIDChestDataBuilder;
 import io.github.hsyyid.spongychest.listeners.HitBlockListener;
 import io.github.hsyyid.spongychest.listeners.InteractBlockListener;
+import io.github.hsyyid.spongychest.listeners.ItemFrameListener;
 import io.github.hsyyid.spongychest.utils.ChestShopModifier;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -37,6 +38,7 @@ import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.key.Key;
 import org.spongepowered.api.data.key.KeyFactory;
+import org.spongepowered.api.data.value.mutable.ListValue;
 import org.spongepowered.api.data.value.mutable.Value;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
@@ -61,10 +63,14 @@ public class SpongyChest
 	public static Set<ChestShopModifier> chestShopModifiers = Sets.newHashSet();
 
 	// Keys
+	public static int SELL_PRICE_INDEX = 0;
+	public static int BUY_PRICE_INDEX = 1;
 	public static final Key<Value<Boolean>> IS_SPONGY_CHEST = KeyFactory.makeSingleKey(Boolean.class, Value.class, DataQuery.of("IsSpongyChest"));
 	public static final Key<Value<UUID>> UUID_CHEST = KeyFactory.makeSingleKey(UUID.class, Value.class, DataQuery.of("UUIDChest"));
 	public static final Key<Value<ItemStackSnapshot>> ITEM_CHEST = KeyFactory.makeSingleKey(ItemStackSnapshot.class, Value.class, DataQuery.of("ItemChest"));
-	public static final Key<Value<Double>> PRICE_CHEST = KeyFactory.makeSingleKey(Double.class, Value.class, DataQuery.of("PriceChest"));
+	public static final Key<ListValue<Double>> PRICES_CHEST = KeyFactory.makeListKey(Double.class, DataQuery.of("PricesChest"));
+	public static final Key<Value<Double>> SELL_PRICE_CHEST = KeyFactory.makeSingleKey(Double.class, Value.class, DataQuery.of("PriceChest"));
+	public static final Key<Value<Double>> BUY_PRICE_CHEST = KeyFactory.makeSingleKey(Double.class, Value.class, DataQuery.of("BuyPriceChest"));
 
 	@Inject
 	private Logger logger;
@@ -92,7 +98,22 @@ public class SpongyChest
 		subcommands.put(Arrays.asList("setshop"), CommandSpec.builder()
 			.description(Text.of("Creates SpongyChest shops"))
 			.permission("spongychest.setshop.command")
-			.arguments(GenericArguments.doubleNum(Text.of("price")))
+			.arguments(
+					GenericArguments.firstParsing(
+							GenericArguments.seq(
+									GenericArguments.doubleNum(Text.of("sell-price")),
+									GenericArguments.optional(
+											GenericArguments.doubleNum(Text.of("buy-price"))
+											)
+									),
+							GenericArguments.flags()
+							.valueFlag(GenericArguments.doubleNum(Text.of("sell-price")), "s")
+							.valueFlag(GenericArguments.doubleNum(Text.of("buy-price")), "b")
+							.flag("-sell-price")
+							.flag("-buy-price")
+							.buildWith(GenericArguments.none())
+							)
+					)
 			.executor(new SetShopExecutor())
 			.build());
 
@@ -107,6 +128,7 @@ public class SpongyChest
 
 		Sponge.getEventManager().registerListeners(this, new InteractBlockListener());
 		Sponge.getEventManager().registerListeners(this, new HitBlockListener());
+		Sponge.getEventManager().registerListeners(this, new ItemFrameListener());
 
 		// Chest
 		Sponge.getDataManager().register(IsSpongyChestData.class, ImmutableIsSpongyChestData.class, new IsSpongyChestDataBuilder());

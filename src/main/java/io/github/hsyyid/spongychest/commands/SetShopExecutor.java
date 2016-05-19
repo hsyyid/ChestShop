@@ -19,7 +19,12 @@ public class SetShopExecutor implements CommandExecutor
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext ctx) throws CommandException
 	{
-		BigDecimal price = new BigDecimal(ctx.<Double> getOne("price").get());
+		if (!ctx.hasAny("sell-price") && !ctx.hasAny("buy-price"))
+		{
+			CommandResult.empty();
+		}
+		BigDecimal sellPrice = new BigDecimal(ctx.<Double> getOne("sell-price").orElse(0D));
+		BigDecimal buyPrice = new BigDecimal(ctx.<Double> getOne("buy-price").orElse(0D));
 
 		if (src instanceof Player)
 		{
@@ -29,7 +34,7 @@ public class SetShopExecutor implements CommandExecutor
 			{
 				Optional<ChestShopModifier> modifier = SpongyChest.chestShopModifiers.stream().filter(m -> m.getUuid().equals(player.getUniqueId())).findAny();
 
-				ChestShopModifier chestShopModifier = new ChestShopModifier(player.getUniqueId(), player.getItemInHand().get().createSnapshot(), price);
+				ChestShopModifier chestShopModifier = new ChestShopModifier(player.getUniqueId(), player.getItemInHand().get().createSnapshot(), sellPrice, buyPrice);
 
 				if (modifier.isPresent())
 				{

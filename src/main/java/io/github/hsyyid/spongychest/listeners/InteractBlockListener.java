@@ -11,13 +11,17 @@ import io.github.hsyyid.spongychest.data.uuidchest.SpongeUUIDChestData;
 import io.github.hsyyid.spongychest.data.uuidchest.UUIDChestData;
 import io.github.hsyyid.spongychest.utils.ChestShopModifier;
 import io.github.hsyyid.spongychest.utils.ChestUtils;
+import io.github.hsyyid.spongychest.utils.PlayerUtils;
 import net.minecraft.entity.EntityHanging;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.block.tileentity.carrier.Chest;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.manipulator.mutable.entity.AgentData;
+import org.spongepowered.api.data.manipulator.mutable.entity.InvulnerabilityData;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.hanging.ItemFrame;
@@ -38,6 +42,8 @@ import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -53,12 +59,27 @@ public class InteractBlockListener
 			if (chest.get(IsSpongyChestData.class).isPresent() && chest.get(IsSpongyChestData.class).get().isSpongyChest().get())
 			{
 				ItemStackSnapshot item = chest.get(ItemChestData.class).get().itemStackSnapshot().get();
-				double price = chest.get(PriceChestData.class).get().price().get();
+				double price = chest.get(PriceChestData.class).get().sellPrice().get();
 				UUID ownerUuid = chest.get(UUIDChestData.class).get().uuid().get();
 				TileEntityChest realChest = (TileEntityChest) chest;
+				EntityPlayer realPlayer = (EntityPlayer) player;
 
 				if (player.getUniqueId().equals(ownerUuid))
 				{
+					return;
+				}
+
+				event.setCancelled(true);
+
+				if (price == 0D)
+				{
+					player.sendMessage(Text.of(TextColors.BLUE, "[SpongyChest]: ", TextColors.RED, "The shop owner isn`t selling in this shop."));
+					return;
+				}
+
+				if (!PlayerUtils.fitsItem(realPlayer, item))
+				{
+					player.sendMessage(Text.of(TextColors.BLUE, "[SpongyChest]: ", TextColors.RED, "You have not enough space in your inventory."));
 					return;
 				}
 
@@ -82,8 +103,6 @@ public class InteractBlockListener
 				{
 					player.sendMessage(Text.of(TextColors.BLUE, "[SpongyChest]: ", TextColors.RED, "This shop is out of stock."));
 				}
-
-				event.setCancelled(true);
 			}
 			else if (player.hasPermission("spongychest.shop.create"))
 			{
@@ -91,9 +110,13 @@ public class InteractBlockListener
 
 				if (chestShopModifier.isPresent())
 				{
+					event.setCancelled(true);
 					chest.offer(new SpongeIsSpongyChestData(true));
 					chest.offer(new SpongeItemChestData(chestShopModifier.get().getItem()));
-					chest.offer(new SpongePriceChestData(chestShopModifier.get().getPrice().doubleValue()));
+					List<Double> prices = new ArrayList<>(2);
+					prices.add(SpongyChest.SELL_PRICE_INDEX, chestShopModifier.get().getSellPrice().doubleValue());
+					prices.add(SpongyChest.BUY_PRICE_INDEX, chestShopModifier.get().getBuyPrice().doubleValue());
+					chest.offer(new SpongePriceChestData(prices));
 					chest.offer(new SpongeUUIDChestData(chestShopModifier.get().getUuid()));
 					SpongyChest.chestShopModifiers.remove(chestShopModifier.get());
 
@@ -104,7 +127,7 @@ public class InteractBlockListener
 					{
 						ItemFrame entity = (ItemFrame) itemFrame.get();
 						ItemStack frameStack = chestShopModifier.get().getItem().createStack();
-						frameStack.offer(Keys.DISPLAY_NAME, Text.of(TextColors.GREEN, "Item: ", TextColors.WHITE, frameStack.getTranslation().get(), " ", TextColors.GREEN, "Amount: ", TextColors.WHITE, frameStack.getQuantity(), " ", TextColors.GREEN, "Price: ", TextColors.WHITE, SpongyChest.economyService.getDefaultCurrency().getSymbol().toPlain(), chestShopModifier.get().getPrice()));
+						frameStack.offer(Keys.DISPLAY_NAME, Text.of(TextColors.GREEN, "Item: ", TextColors.WHITE, frameStack.getTranslation().get(), " ", TextColors.GREEN, "Amount: ", TextColors.WHITE, frameStack.getQuantity(), " ", chestShopModifier.get().getSellPrice().doubleValue() == 0 ? Text.EMPTY : Text.of(TextColors.GREEN, "SellPrice: ", TextColors.WHITE, SpongyChest.economyService.getDefaultCurrency().getSymbol().toPlain(), chestShopModifier.get().getSellPrice()), " ", chestShopModifier.get().getBuyPrice().doubleValue() == 0 ? Text.EMPTY : Text.of(TextColors.GREEN, "BuyPrice: ", TextColors.WHITE, SpongyChest.economyService.getDefaultCurrency().getSymbol().toPlain(), chestShopModifier.get().getBuyPrice())));
 						entity.offer(Keys.REPRESENTED_ITEM, frameStack.createSnapshot());
 						((EntityHanging) entity).updateFacingWithBoundingBox(EnumFacing.byName(chest.getLocation().getBlock().get(Keys.DIRECTION).get().name()));
 
@@ -115,7 +138,6 @@ public class InteractBlockListener
 					}
 
 					player.sendMessage(Text.of(TextColors.BLUE, "[SpongyChest]: ", TextColors.GREEN, "Created shop."));
-					event.setCancelled(true);
 				}
 			}
 		}
@@ -136,12 +158,27 @@ public class InteractBlockListener
 				if (chest.get(IsSpongyChestData.class).isPresent() && chest.get(IsSpongyChestData.class).get().isSpongyChest().get())
 				{
 					ItemStackSnapshot item = chest.get(ItemChestData.class).get().itemStackSnapshot().get();
-					double price = chest.get(PriceChestData.class).get().price().get();
+					double price = chest.get(PriceChestData.class).get().sellPrice().get();
 					UUID ownerUuid = chest.get(UUIDChestData.class).get().uuid().get();
 					TileEntityChest realChest = (TileEntityChest) chest;
+					EntityPlayer realPlayer = (EntityPlayer) player;
 
 					if (player.getUniqueId().equals(ownerUuid))
 					{
+						return;
+					}
+
+					event.setCancelled(true);
+
+					if (price == 0D)
+					{
+						player.sendMessage(Text.of(TextColors.BLUE, "[SpongyChest]: ", TextColors.RED, "The shop owner isn`t selling in this shop."));
+						return;
+					}
+
+					if (!PlayerUtils.fitsItem(realPlayer, item))
+					{
+						player.sendMessage(Text.of(TextColors.BLUE, "[SpongyChest]: ", TextColors.RED, "You have not enough space in your inventory."));
 						return;
 					}
 
@@ -165,8 +202,6 @@ public class InteractBlockListener
 					{
 						player.sendMessage(Text.of(TextColors.BLUE, "[SpongyChest]: ", TextColors.RED, "This shop is out of stock."));
 					}
-
-					event.setCancelled(true);
 				}
 			}
 		}

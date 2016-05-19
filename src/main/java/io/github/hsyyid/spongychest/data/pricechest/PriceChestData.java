@@ -1,9 +1,12 @@
 package io.github.hsyyid.spongychest.data.pricechest;
 
-import org.spongepowered.api.data.manipulator.DataManipulator;
+import org.spongepowered.api.data.manipulator.mutable.ListData;
+import org.spongepowered.api.data.value.mutable.ListValue;
 import org.spongepowered.api.data.value.mutable.Value;
 
-public interface PriceChestData extends DataManipulator<PriceChestData, ImmutablePriceChestData>
+public interface PriceChestData extends ListData<Double, PriceChestData, ImmutablePriceChestData>
 {
-	Value<Double> price();
+	ListValue<Double> prices();
+	Value<Double> sellPrice();
+	Value<Double> buyPrice();
 }
