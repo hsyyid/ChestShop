@@ -18,7 +18,6 @@ import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.block.tileentity.TileEntity;
 import org.spongepowered.api.block.tileentity.carrier.Chest;
 import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.hanging.ItemFrame;
 import org.spongepowered.api.entity.living.player.Player;
@@ -101,19 +100,18 @@ public class InteractBlockListener
 					SpongyChest.chestShopModifiers.remove(chestShopModifier.get());
 
 					Location<World> frameLocation = chest.getLocation().add(0, 1, 0);
-					Optional<Entity> itemFrame = chest.getLocation().getExtent().createEntity(EntityTypes.ITEM_FRAME, frameLocation.getPosition());
+					ItemFrame itemFrame = (ItemFrame) chest.getLocation().getExtent().createEntity(EntityTypes.ITEM_FRAME, frameLocation.getPosition());
 
-					if (itemFrame.isPresent())
+					if (itemFrame != null)
 					{
-						ItemFrame entity = (ItemFrame) itemFrame.get();
 						ItemStack frameStack = chestShopModifier.get().getItem().createStack();
 						frameStack.offer(Keys.DISPLAY_NAME, Text.of(TextColors.GREEN, "Item: ", TextColors.WHITE, frameStack.getTranslation().get(), " ", TextColors.GREEN, "Amount: ", TextColors.WHITE, frameStack.getQuantity(), " ", TextColors.GREEN, "Price: ", TextColors.WHITE, SpongyChest.economyService.getDefaultCurrency().getSymbol().toPlain(), chestShopModifier.get().getPrice()));
-						entity.offer(Keys.REPRESENTED_ITEM, frameStack.createSnapshot());
-						((EntityHanging) entity).updateFacingWithBoundingBox(EnumFacing.byName(chest.getLocation().getBlock().get(Keys.DIRECTION).get().name()));
+						itemFrame.offer(Keys.REPRESENTED_ITEM, frameStack.createSnapshot());
+						((EntityHanging) itemFrame).updateFacingWithBoundingBox(EnumFacing.byName(chest.getLocation().getBlock().get(Keys.DIRECTION).get().name()));
 
-						if (((EntityHanging) entity).onValidSurface())
+						if (((EntityHanging) itemFrame).onValidSurface())
 						{
-							chest.getLocation().getExtent().spawnEntity(entity, Cause.of(NamedCause.source(SpawnCause.builder().type(SpawnTypes.PLUGIN).build())));
+							chest.getLocation().getExtent().spawnEntity(itemFrame, Cause.of(NamedCause.source(SpawnCause.builder().type(SpawnTypes.PLUGIN).build())));
 						}
 					}
 
