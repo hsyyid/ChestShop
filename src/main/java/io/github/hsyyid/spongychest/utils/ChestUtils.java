@@ -20,7 +20,8 @@ public class ChestUtils
 
 				if (stack != null && stack.getItem().equals(item)) // TODO: Metadata && stack.getMetadata() == snapshot.)
 				{
-					foundItems += stack.stackSize;
+					// getStackSize
+					foundItems += stack.func_190916_E();
 
 					if (foundItems >= snapshot.getCount())
 					{
@@ -47,15 +48,15 @@ public class ChestUtils
 
 				if (stack != null && stack.getItem().equals(item)) // TODO: Metadata && stack.getMetadata() == snapshot.)
 				{
-					if (neededItems >= foundItems + stack.stackSize)
+					if (neededItems >= foundItems + stack.func_190916_E() /* getStackSize */)
 					{
 						chest.removeStackFromSlot(i);
-						foundItems += stack.stackSize;
+						foundItems += stack.func_190916_E(); /* getStackSize */
 					}
 					else
 					{
-						int amount = (foundItems + stack.stackSize) - neededItems;
-						stack.stackSize = amount;
+						int amount = (foundItems + stack.func_190916_E() /* getStackSize */) - neededItems;
+                        stack.func_190920_e(amount); /* setStackSize */
 						foundItems = neededItems;
 					}
 				}

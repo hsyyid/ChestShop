@@ -13,7 +13,7 @@ public class SpongyChestExecutor implements CommandExecutor
 {
 	public CommandResult execute(CommandSource src, CommandContext ctx) throws CommandException
 	{
-		src.sendMessage(Text.of(TextColors.BLUE, "[SpongyChest]: ", TextColors.GRAY, "Version: ", TextColors.GOLD, Sponge.getPluginManager().getPlugin("io.github.hsyyid.spongychest").get().getVersion().get()));
+		src.sendMessage(Text.of(TextColors.BLUE, "[SpongyChest]: ", TextColors.GRAY, "Version: ", TextColors.GOLD, Sponge.getPluginManager().getPlugin("spongychest").get().getVersion().get()));
 		return CommandResult.success();
 	}
 }

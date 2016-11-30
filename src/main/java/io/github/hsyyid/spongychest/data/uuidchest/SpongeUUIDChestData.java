@@ -14,7 +14,7 @@ import org.spongepowered.api.data.value.mutable.Value;
 import java.util.Optional;
 import java.util.UUID;
 
-public class SpongeUUIDChestData extends AbstractSingleData<UUID, UUIDChestData, ImmutableUUIDChestData> implements UUIDChestData
+public class SpongeUUIDChestData extends AbstractSingleData<UUID, UUIDChestData, ImmutableUUIDChestData> implements UUIDChestData, Comparable<UUIDChestData>
 {
 	public SpongeUUIDChestData()
 	{

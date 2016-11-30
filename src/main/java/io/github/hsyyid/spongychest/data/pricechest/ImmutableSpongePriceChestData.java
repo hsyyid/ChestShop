@@ -11,7 +11,7 @@ import org.spongepowered.api.data.value.immutable.ImmutableValue;
 
 import java.util.Optional;
 
-public class ImmutableSpongePriceChestData extends AbstractImmutableSingleData<Double, ImmutablePriceChestData, PriceChestData> implements ImmutablePriceChestData
+public class ImmutableSpongePriceChestData extends AbstractImmutableSingleData<Double, ImmutablePriceChestData, PriceChestData> implements ImmutablePriceChestData, Comparable<ImmutablePriceChestData>
 {
 	public ImmutableSpongePriceChestData(Double value)
 	{

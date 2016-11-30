@@ -12,7 +12,7 @@ import org.spongepowered.api.data.value.immutable.ImmutableValue;
 import java.util.Optional;
 import java.util.UUID;
 
-public class ImmutableSpongeUUIDChestData extends AbstractImmutableSingleData<UUID, ImmutableUUIDChestData, UUIDChestData> implements ImmutableUUIDChestData
+public class ImmutableSpongeUUIDChestData extends AbstractImmutableSingleData<UUID, ImmutableUUIDChestData, UUIDChestData> implements ImmutableUUIDChestData, Comparable<ImmutableUUIDChestData>
 {
 	public ImmutableSpongeUUIDChestData(UUID value)
 	{

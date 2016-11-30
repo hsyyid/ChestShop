@@ -1,29 +1,14 @@
 package io.github.hsyyid.spongychest;
 
 import com.google.common.collect.Sets;
+import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import io.github.hsyyid.spongychest.commands.SetShopExecutor;
 import io.github.hsyyid.spongychest.commands.SpongyChestExecutor;
-import io.github.hsyyid.spongychest.data.isspongychest.ImmutableIsSpongyChestData;
-import io.github.hsyyid.spongychest.data.isspongychest.ImmutableSpongeIsSpongyChestData;
-import io.github.hsyyid.spongychest.data.isspongychest.IsSpongyChestData;
-import io.github.hsyyid.spongychest.data.isspongychest.IsSpongyChestDataBuilder;
-import io.github.hsyyid.spongychest.data.isspongychest.SpongeIsSpongyChestData;
-import io.github.hsyyid.spongychest.data.itemchest.ImmutableItemChestData;
-import io.github.hsyyid.spongychest.data.itemchest.ImmutableSpongeItemChestData;
-import io.github.hsyyid.spongychest.data.itemchest.ItemChestData;
-import io.github.hsyyid.spongychest.data.itemchest.ItemChestDataBuilder;
-import io.github.hsyyid.spongychest.data.itemchest.SpongeItemChestData;
-import io.github.hsyyid.spongychest.data.pricechest.ImmutablePriceChestData;
-import io.github.hsyyid.spongychest.data.pricechest.ImmutableSpongePriceChestData;
-import io.github.hsyyid.spongychest.data.pricechest.PriceChestData;
-import io.github.hsyyid.spongychest.data.pricechest.PriceChestDataBuilder;
-import io.github.hsyyid.spongychest.data.pricechest.SpongePriceChestData;
-import io.github.hsyyid.spongychest.data.uuidchest.ImmutableSpongeUUIDChestData;
-import io.github.hsyyid.spongychest.data.uuidchest.ImmutableUUIDChestData;
-import io.github.hsyyid.spongychest.data.uuidchest.SpongeUUIDChestData;
-import io.github.hsyyid.spongychest.data.uuidchest.UUIDChestData;
-import io.github.hsyyid.spongychest.data.uuidchest.UUIDChestDataBuilder;
+import io.github.hsyyid.spongychest.data.isspongychest.*;
+import io.github.hsyyid.spongychest.data.itemchest.*;
+import io.github.hsyyid.spongychest.data.pricechest.*;
+import io.github.hsyyid.spongychest.data.uuidchest.*;
 import io.github.hsyyid.spongychest.listeners.HitBlockListener;
 import io.github.hsyyid.spongychest.listeners.InteractBlockListener;
 import io.github.hsyyid.spongychest.utils.ChestShopModifier;
@@ -47,24 +32,24 @@ import org.spongepowered.api.service.economy.EconomyService;
 import org.spongepowered.api.text.Text;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-@Plugin(id = "io.github.hsyyid.spongychest", name = "SpongyChest", version = "0.4.7")
+@Plugin(
+		id = "spongychest",
+		name = "SpongyChest",
+		version = "0.4.7",
+		description = "SpongyChest is a plugin that utilizes Chests to make in-game item shops for players to sell items to each other!"
+)
 public class SpongyChest
 {
 	public static EconomyService economyService;
 	public static Set<ChestShopModifier> chestShopModifiers = Sets.newHashSet();
 
 	// Keys
-	public static final Key<Value<Boolean>> IS_SPONGY_CHEST = KeyFactory.makeSingleKey(Boolean.class, Value.class, DataQuery.of("IsSpongyChest"));
-	public static final Key<Value<UUID>> UUID_CHEST = KeyFactory.makeSingleKey(UUID.class, Value.class, DataQuery.of("UUIDChest"));
-	public static final Key<Value<ItemStackSnapshot>> ITEM_CHEST = KeyFactory.makeSingleKey(ItemStackSnapshot.class, Value.class, DataQuery.of("ItemChest"));
-	public static final Key<Value<Double>> PRICE_CHEST = KeyFactory.makeSingleKey(Double.class, Value.class, DataQuery.of("PriceChest"));
+	public static final Key<Value<Boolean>> IS_SPONGY_CHEST = KeyFactory.makeSingleKey(TypeToken.of(Boolean.class), new TypeToken<Value<Boolean>>() {}, DataQuery.of("IsSpongyChest"), "spongychest:is_spongy_chest", "Is SpongyChest");
+	public static final Key<Value<UUID>> UUID_CHEST = KeyFactory.makeSingleKey(TypeToken.of(UUID.class), new TypeToken<Value<UUID>>() {}, DataQuery.of("UUIDChest"), "spongychest:uuid_chest", "The UUID of the owner");
+	public static final Key<Value<ItemStackSnapshot>> ITEM_CHEST = KeyFactory.makeSingleKey(TypeToken.of(ItemStackSnapshot.class), new TypeToken<Value<ItemStackSnapshot>>() {}, DataQuery.of("ItemChest"), "spongychest:item_chest", "The actual item this SpongyChest sells/buys");
+	public static final Key<Value<Double>> PRICE_CHEST = KeyFactory.makeSingleKey(TypeToken.of(Double.class), new TypeToken<Value<Double>>() {}, DataQuery.of("PriceChest"), "spongychest:price_chest", "The price this SpongyChest sells/buys for");
 
 	@Inject
 	private Logger logger;

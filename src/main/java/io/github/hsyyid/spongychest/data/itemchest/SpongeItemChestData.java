@@ -16,7 +16,7 @@ import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 
 import java.util.Optional;
 
-public class SpongeItemChestData extends AbstractSingleData<ItemStackSnapshot, ItemChestData, ImmutableItemChestData> implements ItemChestData
+public class SpongeItemChestData extends AbstractSingleData<ItemStackSnapshot, ItemChestData, ImmutableItemChestData> implements ItemChestData, Comparable<ItemChestData>
 {
 	public SpongeItemChestData()
 	{

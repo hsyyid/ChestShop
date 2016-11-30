@@ -13,7 +13,7 @@ import org.spongepowered.api.data.value.mutable.Value;
 
 import java.util.Optional;
 
-public class SpongePriceChestData extends AbstractSingleData<Double, PriceChestData, ImmutablePriceChestData> implements PriceChestData
+public class SpongePriceChestData extends AbstractSingleData<Double, PriceChestData, ImmutablePriceChestData> implements PriceChestData, Comparable<PriceChestData>
 {
 	public SpongePriceChestData()
 	{
